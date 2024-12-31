@@ -63,7 +63,7 @@
         </select>
 
         <label for="countSelector">Select Count:</label>
-        <input type="range" min="1" max="50" value="1" class="simple-slider" id="countSelector">
+        <input type="range" min="0" max="50" value="1" class="simple-slider" id="countSelector">
         <span id="countValue">1</span>
 
         <button id="runSimulationButton">Run Simulation</button>
@@ -87,7 +87,7 @@
         const result = document.getElementById("result");
         const cosSinValuesDiv = document.getElementById("cosSinValues");
 
-        const quadrantColors = ["#FFFFB5", "#B0F8FF", "#90EE00", "#F37C6D"];
+        const quadrantColors = ["#60AFFF","#90EE00","#F37C6D","#FFFFB5"];
         const circleRadius = 120;
 
         let simulationInterval;
