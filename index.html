@@ -44,6 +44,11 @@
             background-color: #4CAF50;
             cursor: pointer;
         }
+
+        #angleValues {
+            margin-top: 20px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -58,15 +63,18 @@
         </select>
 
         <label for="countSelector">Select Count:</label>
-        <input type="range" min="0" max="50" value="1" class="simple-slider" id="countSelector">
+        <input type="range" min="1" max="50" value="1" class="simple-slider" id="countSelector">
         <span id="countValue">1</span>
 
         <button id="runSimulationButton">Run Simulation</button>
     </div>
 
-    <canvas id="unitCircleCanvas" width="600" height="600"></canvas> <!-- Increased canvas size -->
+    <canvas id="unitCircleCanvas" width="400" height="400"></canvas>
 
-    <div id="result" class="result"></div>
+    <div id="angleValues">
+        <strong>Angles and Values:</strong>
+        <div id="cosSinValues"></div>
+    </div>
 
     <script>
         const canvas = document.getElementById("unitCircleCanvas");
@@ -77,10 +85,10 @@
         const countValueDisplay = document.getElementById("countValue");
         const runSimulationButton = document.getElementById("runSimulationButton");
         const result = document.getElementById("result");
+        const cosSinValuesDiv = document.getElementById("cosSinValues");
 
         const quadrantColors = ["#FFFFB5", "#B0F8FF", "#90EE00", "#F37C6D"];
-        const subOctants = 4;
-        const circleRadius = 150; // Increased radius for better visibility
+        const circleRadius = 120;
 
         let simulationInterval;
 
@@ -102,27 +110,26 @@
             drawUnitCircle();
             const angleText = `${count}π/${denominator}`;
             displayValues(theta, count, angleMultiple, angleText);
+            updateAngleValues(theta, count, angleText);
         }
 
         function drawUnitCircle() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            ctx.beginPath();
-            ctx.arc(canvas.width / 2, canvas.height / 2, circleRadius, 0, 2 * Math.PI);
-            ctx.strokeStyle = "#000000";
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
 
+            drawCircle(centerX, centerY, circleRadius, "#000000");
+            drawCircle(centerX, centerY, circleRadius * 0.33, "#AAAAAA");
+            drawCircle(centerX, centerY, circleRadius * 0.66, "#AAAAAA");
+
             for (let quadrant = 0; quadrant < 4; quadrant++) {
                 const baseAngle = quadrant * (Math.PI / 2);
-                const shades = generateShades(quadrantColors[quadrant], subOctants);
+                const shades = generateShades(quadrantColors[quadrant], 4);
 
-                for (let sub = 0; sub < subOctants; sub++) {
-                    const startAngle = baseAngle + sub * (Math.PI / (2 * subOctants));
-                    const endAngle = baseAngle + (sub + 1) * (Math.PI / (2 * subOctants));
+                for (let sub = 0; sub < 4; sub++) {
+                    const startAngle = baseAngle + sub * (Math.PI / 8);
+                    const endAngle = baseAngle + (sub + 1) * (Math.PI / 8);
 
                     ctx.beginPath();
                     ctx.moveTo(centerX, centerY);
@@ -133,6 +140,14 @@
                     ctx.fill();
                 }
             }
+        }
+
+        function drawCircle(x, y, radius, color) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
+            ctx.stroke();
         }
 
         function generateShades(color, numShades) {
@@ -175,6 +190,16 @@
             ctx.fillText(`sin(${angleText}): ${Math.sin(theta).toFixed(2)}`, x + 10, y);
         }
 
+        function updateAngleValues(theta, count, angleText) {
+            const cosValue = Math.cos(theta).toFixed(2);
+            const sinValue = Math.sin(theta).toFixed(2);
+
+            cosSinValuesDiv.innerHTML = `
+                <p>cos(${angleText}): ${cosValue}</p>
+                <p>sin(${angleText}): ${sinValue}</p>
+            `;
+        }
+
         function runSimulation() {
             const maxCount = parseInt(countSelector.value, 10);
             let currentCount = 0;
@@ -192,7 +217,7 @@
                 if (currentCount >= maxCount) {
                     clearInterval(simulationInterval);
                 }
-            }, 1000);
+            }, 500);
         }
 
         runSimulationButton.addEventListener('click', runSimulation);
@@ -208,3 +233,4 @@
 </html>
 
 
+           
